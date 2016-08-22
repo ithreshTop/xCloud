@@ -1,0 +1,192 @@
+{% extends "base.html"%}
+
+{% block page_title %}
+<title> charging | Dashboard </title>
+
+{% endblock %}
+
+{% block nav_title %}
+    账单
+{% endblock %}
+{% block content_title %}
+    账单		
+    <small>Metering</small>
+{% endblock %}
+{% block page_content %}
+    <section class="content invoice">
+        <!-- title row -->
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="page-header">
+                    <i class="fa fa-dollar"></i>云主机账单
+                    <small class="pull-right">
+                        <form method="post" name="set_date" action="/feature/metering/">
+                          <select id="year" name="year" onchange="YYYYDD(this.value)">
+                            <option value={{ month.year }}>{{ month.year }}年</option>
+                          </select>
+                          <select id="month" name="month">
+                            <option value={{ month.month }}>{{ month.month }}月</option>
+                          </select>
+                            <input type="submit" >
+                        </form>
+                    </small>
+                    <small style="font-size: large" class="pull-right">选择查询时间:  </small>
+                </h2>
+            </div><!-- /.col -->
+        </div>
+        <!-- Table row -->
+        <div class="row">
+            <div class="col-xs-12 table-responsive">
+                <h5>当月明细</h5>
+                <table class="table table-striped" id="price">
+                    <thead>
+                        <tr>
+                            <th>计费项</th>
+                            <th>数量</th>
+                            <th>单价</th>
+                            <th>总金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="detailOfInstance/p1{{ month.year }}p2{{ month.month }}">主机</a></td>
+                            <td>{{ ins }}个</td>
+                            <td>{{ price.instance }}元/月</td>
+                            <td>{{ ins_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td><a href="detailOfInstance/p1{{ month.year }}p2{{ month.month }}">CPU</a></td>
+                            <td>{{ cpu }}个</td>
+                            <td>{{ price.cpu }}元/C/月</td>
+                            <td>{{ cpu_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td><a href="detailOfInstance/p1{{ month.year }}p2{{ month.month }}">内存</a></td>
+                            <td>{{ ram }}G</td>
+                            <td>{{ price.ram }}元/G/月</td>
+                            <td>{{ ram_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td><a href="detailOfVolume/p1{{ month.year }}p2{{ month.month }}">硬盘</a></td>
+                            <td>{{ vol }}G</td>
+                            <td>{{ price.volume }}元/G/月</td>
+                            <td>{{ vol_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td>月合计：</td>
+                            <td></td>
+                            <td></td>
+                            <td id="total_price"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+
+        <div class="row">
+            <!-- accepted payments column -->
+            <div class="col-xs-6">
+                <p class="lead">消费累计金额 :</p>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </section>
+    <section class="content invoice">
+        <!-- title row -->
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="page-header">
+                    <i class="fa fa-dollar"></i>外部资源账单
+                    <small class="pull-right">Date: {{ now }}</small>
+                </h2>
+            </div><!-- /.col -->
+        </div>
+        <!-- Table row -->
+        <div class="row">
+            <div class="col-xs-12 table-responsive">
+                <h5>当月明细</h5>
+                <table class="table table-striped" id="price">
+                    <thead>
+                        <tr>
+                            <th>计费项</th>
+                            <th>数量</th>
+                            <th>单价</th>
+                            <th>总金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="listDetail">主机</a></td>
+                            <td>{{ solarwinds_swins }}个</td>
+                            <td>{{ price.instance }}元/月</td>
+                            <td>{{ solarwinds_swins_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td><a href="listDetail">CPU</a></td>
+                            <td>{{ solarwinds_cpu }}个</td>
+                            <td>{{ price.cpu }}元/C/月</td>
+                            <td>{{ solarwinds_cpu_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td><a href="listDetail">内存</a></td>
+                            <td>{{ solarwinds_ram }}G</td>
+                            <td>{{ price.ram }}元/G/月</td>
+                            <td>{{ solarwinds_ram_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td><a href="listDetail">硬盘</a></td>
+                            <td>{{ solarwinds_disk }}G</td>
+                            <td>{{ price.volume }}元/G/月</td>
+                            <td>{{ solarwinds_disk_total_price }}元</td>
+                        </tr>
+                        <tr>
+                            <td>月合计：</td>
+                            <td></td>
+                            <td></td>
+                            <td id="solar_total_price"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+
+        <div class="row">
+            <!-- accepted payments column -->
+            <div class="col-xs-6">
+                <p class="lead">消费累计金额 :</p>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </section>
+{% endblock %}
+
+{% block page_script %}
+<script language="JavaScript">
+   $(document).ready(function() {
+       var price = {{ ins_total_price }}+{{ cpu_total_price }}+{{ ram_total_price }}+{{ vol_total_price }};
+       var solar_price = {{ solarwinds_swins_total_price }}+{{ solarwinds_cpu_total_price }}+
+                                    {{ solarwinds_ram_total_price }}+{{ solarwinds_disk_total_price }};
+       $("#total_price")[0].innerHTML = price.toFixed(2);
+       $("#solar_total_price")[0].innerHTML = solar_price.toFixed(2);
+    });
+
+   function YYYYMMDDstart()
+   {
+           // MonHead = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+           //先给年下拉框赋内容
+           var y  = new Date().getFullYear();
+           for (var i = (y-2); i < (y+10); i++) //以今年为准，前2年，后10年
+                   document.set_date.year.options.add(new Option(" "+ i +" 年", i));
+
+           //赋月份的下拉框
+           for (var i = 1; i < 13; i++)
+                   document.set_date.month.options.add(new Option(" " + i + " 月", i));
+
+
+
+   }
+   if(document.attachEvent)
+       window.attachEvent("onload", YYYYMMDDstart);
+   else
+       window.addEventListener('load', YYYYMMDDstart, false);
+</script>
+{% endblock %}

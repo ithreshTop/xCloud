@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+<title> image | Dashboard </title>
+{% endblock %}
+
+{% block nav_title %}
+    镜像
+{% endblock %}
+
+{% block content_title %}
+    镜像
+    <small>Image</small>
+{% endblock %}
+
+{% block page_content %}
+<br>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">镜像列表</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+        <table class="table table-bordered">
+            <tbody><tr>
+                <th style="width: 20px">序号</th>
+                <th style="width: 200px">镜像名称</th>
+                <th style="width: 200px">状态</th>
+                <th style="width: 200px">ID</th>
+            </tr>
+            {% if image_status %}
+            {% for image_detail in image_status %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ image_detail.name }}</td>
+                    <td>{{ image_detail.status }}</td>
+                    <td>{{ image_detail.IndustryGroupName }}</td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody></table>
+    </div><!-- /.box-body -->
+    <div class="box-footer clearfix">
+        <ul class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

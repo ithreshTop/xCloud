@@ -1,0 +1,19 @@
+<div class="modal-content" style="width:1080px;height:600px" xmlns="http://www.w3.org/1999/html">  <!-- 悬浮窗口-->
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">
+           密码修改
+        </h4>
+    </div>
+        <form action="/changePassword/" method="POST">
+            <label>用户名 ：{{ username }}</label><br>
+            <label>旧密码</label>
+            <input type="password" name="old_password" placeholder="旧密码">
+            <label>新密码</label>
+            <input type="password" name="new_password" placeholder="新密码">
+            <button type="submit" name="submit">提交修改</button>
+        </form>
+    <br><br>
+            </div>
+        </div>
+    </div>
+</div>

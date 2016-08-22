@@ -1,0 +1,256 @@
+﻿{% extends "base.html" %}
+
+{% block page_title %}
+<title> volume | Dashboard </title>
+{% endblock %}
+
+
+{% block content_title %}
+    云硬盘
+    <small>Volume</small>
+{% endblock %}
+
+{% block page_content %}
+    <form action="load/" method="post">
+      <div class="container-fluid">
+        <div class="row padding-top-15">
+            <div class="col-md-12">
+                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" style="margin-left:100px">
+                        <div class="modal-content" style="width:100%;height:100%">
+                            <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">
+                               连接到云主机
+                            </h4>
+                            </div>
+
+                        <div class="modal-footer">
+                            <div class="col-md-12 form-horizontal standform standform-sm">
+                                <div class="form-group">
+                                 <div class="col-md-6">
+                                        <label class="col-md-4 control-label"
+                                                    style="text-align: right;padding-right: 0 ">云硬盘名:</label>
+                                        <div class="col-md-7">
+                                                <input type="text" readonly="readonly" class=" form-control"
+                                                         name="volume_name" id="volume_name"
+                                                         data-bind="value:bill().volume_name" >
+                                                 <input type="hidden" name="volume_id" id="volume_id">
+                                        </div>
+                                 </div>
+                                    <div class="col-md-6">
+                                        <label for="isex" class="col-md-4 control-label"  style="text-align: right;padding-right: 0 ">主机选择:</label>
+                                        <div class="col-md-7">
+                                            <select  class="form-control" name="server" id="server" data-bind="value:bill().server" style="width:150px">
+                                                {% for server in servers %}
+                                                    {% for ser in server.items.0.1 %}
+                                                        <option value="{{ ser.id }}|{{ server.items.0.0 }}">{{ ser.name }}</option>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                 </div>
+                                    <div>
+                                    <br>
+                                </div>
+
+                                <div>
+                                    <br>
+                                </div>
+                                 <div class="float-right">
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">关闭
+                                    </button>
+                                    <button id="select_server" type="submit" class="btn btn-primary">
+                                        确定
+                                    </button>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+      </div>
+    </form>
+<form action="extend/" method="post">
+      <div class="container-fluid">
+        <div class="row padding-top-15">
+            <div class="col-md-12">
+                  <div class="modal fade" id="sizeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" style="margin-left:100px">
+                        <div class="modal-content" style="width:900px;height:200px">
+                            <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">
+                               扩展云盘SIZE
+                            </h4>
+                            </div>
+
+                        <div class="modal-footer">
+                            <div class="col-md-12 form-horizontal standform standform-sm">
+                                <div class="form-group">
+                                 <div class="col-md-6">
+                                        <div>
+                                            <br>
+                                        </div>
+                                        <label class="col-md-4 control-label"
+                                                    style="text-align: right;padding-right: 0 ">云硬盘名:</label>
+                                        <div class="col-md-7">
+                                                <input type="text" readonly="readonly" class=" form-control"
+                                                         name="vol_name" id="vol_name"
+                                                         data-bind="value:bill().vol_name" >
+                                        </div>
+                                     <input type="hidden" class=" form-control"
+                                       name="vol_type" id="vol_type">
+                                 </div>
+                                    <div class="col-md-6">
+                                        <div>
+                                        <label id="volume_message" style="color: red"></label>
+                                        </div>
+                                        <label for="isex" class="col-md-4 control-label"  style="text-align: right;padding-right: 0 ">重新选择SIZE:</label>
+                                        <div class="col-md-7">
+                                            <input type="text" id="re_size" name="re_size" data-bind="value:bill().re_size">
+                                        </div>
+                                 </div>
+                                    <div>
+                                    <br>
+                                </div>
+
+                                <div>
+                                    <br>
+                                </div>
+                                 <div class="float-right">
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">关闭
+                                    </button>
+                                    <button id="extend" type="submit" class="btn btn-primary">
+                                        确定
+                                    </button>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+      </div>
+    </form>
+<div>
+    <div>
+        <div name="volume_action">
+            <br>
+            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createVolModal" >创建云硬盘</button>
+            <button id="del" class="btn btn-primary btn-sm" onclick="del()" >删除</button>
+        </div>
+    </div>
+    <br>
+    <div class="box">
+    <div class="box-header">
+        <h3 class="box-title">云硬盘列表</h3>
+        <div class="box-tools">
+            <div class="input-group">
+                
+            </div>
+        </div>
+    </div><!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-striped" id="volumes">
+            <tbody><tr>
+                <th><input type="checkbox" id="sel_all" onclick="sel('chk')"></th>
+                <th>名称</th>
+                <th>状态</th>
+                <th>容量(GB)</th>
+                <th>描述</th>
+                <th>连接到</th>
+                <th>环境</th>
+                <th>所属集团</th>
+                <th>操作</th>
+            </tr>
+            {% if not vols %}
+            <p>当前未创建云硬盘</p>
+            {% else %}
+            {% for vol in vols %}
+
+                {% for v in vol.items.0.1 %}
+            <tr id="{{v.id}}">
+                <td><input type="checkbox" name="chk" /></td>
+                <th id="{{v.id}}">{{ v.display_name }}</th>
+                <th id="{{ v.display_name }}"><label class="label label-info">{{ v.status }}</label></th>
+                <th>{{ v.size }}</th>
+                <th style="width: 30%; word-break: break-all">{{ v.display_description }}</th>
+                <th>
+                    {% for server in servers %}
+                        {% for ser in server.items.0.1 %}
+                            {% if ser.id == v.attachments.0.items.1.1 %}
+                                {{ ser.name }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </th>
+                <th>{{ vol.items.0.0 }}</th>
+                <th>
+                	{% for lv in local_vols %}
+                        {% if lv.volume_id == v.id %}
+                            {{ lv.metering_group }}
+                        {% endif %}
+                    {% endfor %}
+                </th>
+                <th class="btn-group"  onclick="getVolume(this.parentNode.rowIndex)">
+                    <button type="button" class="btn btn-default">编辑</button>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#" data-toggle="modal" data-target="#myModal" >挂载云硬盘</a></li>
+                        <li><a href="unload/p1{{ v.id }}p2{{ vol.items.0.0 }}">卸载云硬盘</a></li>
+                        <li><a href="delete/p1{{ v.id }}p2{{ vol.items.0.0 }}">删除云硬盘</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#sizeModal">扩展云硬盘</a></li>
+                        <li class="divider"></li>
+                    </ul>
+                </th>
+            </tr>
+                    {% endfor %}
+            {% endfor %}
+            {% endif %}
+        </tbody></table>
+    </div><!-- /.box-body -->
+    </div>
+</div>
+    {% include './pages/volume/create.html' %}
+{% endblock %}
+
+{% block page_script %}
+<script src="/static/js/volume/volume.js"></script>
+<script>
+
+$(document).ready(function() {
+    {% for vol in vols %}
+        {% for v in vol.items.0.1 %}
+            var aa = $( "#{{ v.display_name }}").text();
+            if(aa != "available" && aa != "in-use") {
+                var a{{ v.display_name }} = setInterval(function () {
+                    $.get("/feature/volume/ajax_process/p1{{ v.display_name }}p2{{ vol.items.0.0 }}", function (data) {
+                        if (data == "available" || data == "in-use" || data == "deleted") {
+                            if (data == "deleted") {
+                                var tr = $("#{{ v.id }}")[0];
+                                tr.innerHTML = ""
+                            }
+                            else {
+                                var th = $("#{{ v.display_name }}")[0];
+                                var status = '<label class="label label-info">' + data + "</label>";
+                                th.innerHTML = status;
+                            }
+                            clearInterval(a{{ v.display_name }});
+                        }
+                    })
+                }, 8000);
+            }
+        {% endfor %}
+    {% endfor %}
+})
+</script>
+{% endblock %}

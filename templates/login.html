@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/static/img/enn.ico">
+
+    <title>欢迎登陆新智云平台</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/signin.css" rel="stylesheet">
+
+
+
+
+  <script src="/static/js/b5m.js" charset="utf-8" id="b5mmain" type="text/javascript"></script><link type="text/css" href="Signin%20Template%20for%20Bootstrap_files/b5m-plugin.css" rel="stylesheet"></head>
+
+  <body>
+
+    <div class="container">
+
+      <form class="form-signin" action="/accounts/login/" method="POST">
+        <label for="inputEmail" class="sr-only">Username</label>
+        <input id="username" name="username" class="form-control" placeholder="username" required="" autofocus="" 
+        value="{{ form.username.value }}" >
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input id="password" name="password" class="form-control" placeholder="Password" required="" type="password">
+          <font color="red">{{ info }}</font>
+        <table  width="300">
+            <td> <button class="btn btn-lg btn-primary btn-block" type="submit">登陆</button></td>
+            <td>
+                <input type="button" class="btn btn-lg btn-primary btn-block" value="注册" disabled="disabled"></a>
+            </td>
+        </table>
+
+      </form>
+
+    </div> <!-- /container -->
+
+
+</body></html>

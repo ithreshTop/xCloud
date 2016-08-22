@@ -1,0 +1,57 @@
+﻿{% extends "base.html" %}
+
+{% block page_title %}
+<title>e-mail | Dashboard </title>
+{% endblock %}
+
+
+{% block content_title %}
+    发送邮件
+    <small>Send_Email</small>
+{% endblock %}
+{% block page_script %}
+    <script type="text/javascript" src="/static/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        tinymce.init(
+                {selector:"textarea"}
+        );
+    $(document).ready(function() {
+        $("#subject").bind("keyup", function () {
+                    text = $("#subject").val();
+                    if (text) {
+                        $("#sub").attr("disabled", false);
+                    }else{
+                        $("#sub").attr("disabled", true);
+                    }
+                }
+            )
+    })
+    function suc(){
+            alert("邮件已发送,我们会尽快处理！");
+    };
+    </script>
+{% endblock %}
+
+{% block page_content %}
+	<section class="content invoice">
+    <div>
+    <form action="/feature/mail/" method="POST" >
+        <div>
+        <h3>邮件主题:</h3>
+        <input type="text" id="subject" name="subject" maxlength="255" style="width: 500px">
+        <h3>类别:</h3>
+            <select name="category">
+                <option value="1">资源申请</option>
+                <option value="2">问题反馈</option>
+                <option value="3">投诉建议</option>
+            </select>
+        </div>
+        <br>
+        <h3>内容:</h3>
+        <textarea name="context"></textarea>
+        <br>
+        <input id="sub" name="sub" onclick="suc()" disabled="disabled" type="submit" value="发送">
+    </form>
+    </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+<title> 500 | ERROR </title>
+{% endblock %}
+
+
+{% block content_title %}
+    ERROR
+    <small>500</small>
+{% endblock %}
+
+{% block page_content %}
+
+    <div class="error-page">
+        <h1 class="fa fa-warning text-info">出错啦</h1>
+        <div class="error-content">
+            {% if error_message %}
+            <h2><i class="fa fa-warning text-yellow"></i>{{ error_message }}</h2>
+            {% else %}
+            <h2><i class="fa fa-warning text-yellow"></i>未知错误发生了</h2>
+            {% endif %}
+            <p>
+            <h3>我们会尽快解决</h3>
+            </p>
+        </div>
+    </div><!-- /.error-page -->
+
+{% endblock %}

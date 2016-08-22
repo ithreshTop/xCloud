@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+<title> instance | Dashboard </title>
+{% endblock %}
+
+{% block nav_title %}
+    云主机
+{% endblock %}
+
+{% block content_title %}
+    云主机详情
+    <small>{{ ins.name }}</small>
+{% endblock %}
+
+{% block page_content %}
+    <table align="center">
+    <tr>
+        <td width="30%" style="vertical-align: top">
+            <h4><b>基本信息</b></h4><br>
+            <h5><b>名称</b></h5>{{ ins.name }}<br>
+            <h5><b>ID</b></h5>{{ ins.id }}<br>
+            <h5><b>状态</b></h5>{{ ins.status }}<br>
+            <h5><b>产业集团</b></h5>{{ ins_d.metering_group }}<br>
+            <h5><b>业务用途</b></h5>{{ ins_d.describe }}<br>
+            <h5><b>创建时间</b></h5>{{ ins_d.create_time }}<br>
+            <h5><b>到期时间</b></h5>{{ ins_d.deadline }}<br>
+        </td>
+        <td width="30%" style="vertical-align: top">
+            <h4><b>规格</b></h4><br>
+            {% for fla in flavor %}
+                {% if fla.id == ins.flavor.id %}
+                    <h5><b>云主机类型</b></h5>{{ fla.name }}<br>
+                    <h5><b>内存</b></h5>{{ fla.ram }}MB<br>
+                    <h5><b>虚拟内核</b></h5>{{ fla.vcpus }}虚拟内核<br>
+                {% endif %}
+            {% endfor %}
+            {% for img in image %}
+                {% if img.id == ins.image.id %}
+                    <h5><b>镜像</b></h5>{{ img.name }}<br>
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td width="30%" style="vertical-align: top">
+            <h4><b>IP地址</b></h4><br>
+            <h5><b>网络名: {{ ins.networks.keys.0 }}</b></h5>
+            私有IP: {{ ins.networks.values.0.0 }}<br>
+            公有IP: {{ ins.networks.values.0.1 }}<br>
+            <br><br>
+            {% if cin %}
+                <h4><b>已连接云硬盘</b></h4><br>
+                <h5><b>已挂载</b></h5>
+                {% for c in cin %}
+                    {{ c.display_name }}<br>
+                {% endfor %}
+            {% else %}
+                <h4><b>未连接云硬盘</b></h4>
+            {% endif %}
+        </td>
+    </tr>
+    </table>
+{% endblock %}

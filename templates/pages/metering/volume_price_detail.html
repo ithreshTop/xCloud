@@ -1,0 +1,51 @@
+{% extends "base.html"%}
+
+{% block page_title %}
+<title> charging | Dashboard </title>
+{% endblock %}
+
+{% block content_title %}
+    磁盘明细
+    <small>volume</small>
+{% endblock %}
+
+{% block page_content %}
+<table class="table table-hover" id="price">
+<tr>
+    <th>磁盘名</th>
+    <th>磁盘大小</th>
+    <th>创建时间</th>
+    <th>删除时间</th>
+    <th>费用</th>
+</tr>
+    {% for vol in vol_list %}
+        <tr>
+        <td>{{ vol.name }}</td>
+        <td>{{ vol.size }}</td>
+        <td>{{ vol.create_time }}</td>
+        <td>{% if vol.del_time %}
+            {{ vol.del_time }}
+        {% endif %}</td>
+        <td>{{ vol.price }}元</td>
+        </tr>
+    {% endfor %}
+<tr>
+    <td>合计</td>
+    <td colspan="4" id="total_price"></td>
+</tr>
+</table>
+{% endblock %}
+
+
+{% block page_script %}
+<script>
+   $(document).ready(function() {
+        var table = document.getElementById("price");
+        var price = 0;
+        for(var i = 1; i < table.rows.length-1; i++){
+            price += parseFloat(table.rows[i].cells[4].innerHTML);
+        }
+        document.getElementById("total_price").innerHTML = price.toString()+"元";
+    })
+</script>
+{% endblock %}

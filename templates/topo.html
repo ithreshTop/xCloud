@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+<title>network-topo | Dashboard </title>
+{% endblock %}
+
+
+{% block content_title %}
+    网络拓扑
+    <small>network-topo</small>
+{% endblock %}
+{% block page_script %}
+<script src="/static/js/link.js"></script>
+<script>
+function drawserver(x){
+    var c=document.getElementById("myCanvas");
+    var ctx=c.getContext("2d");
+    var server = new Image()
+    server.src="/static/img/server.png"
+    server.onload=function()
+    {
+        ctx.drawImage(server,250,x);
+    }
+}
+
+$(document).ready(function() {
+    var c=document.getElementById("myCanvas");
+    var ctx=c.getContext("2d");
+    var img = new Image()
+    img.src="/static/img/internet.png"
+    img.onload=function()
+    {
+         ctx.drawImage(img,400,12);
+    }
+    {% for router in routers  %}
+        {% for network in networks %}
+    ctx.beginPath();
+    ctx.lineWidth=5;
+    ctx.strokeStyle="green";
+    ctx.lineCap="butt";
+    ctx.moveTo(120,100);ctx.lineTo(800,100);ctx.moveTo(120,250);ctx.lineTo(400,250);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.lineWidth=1;
+    ctx.strokeStyle="#3f4282";
+    ctx.lineCap="butt";
+    ctx.moveTo(250,100);ctx.lineTo(250,250);ctx.moveTo(190,250),ctx.lineTo(190,280)
+            {% for port in ports %}
+                {% if port.device_id == router.id %}
+    ctx.fillText("{{ port.fixed_ips.0.values.1 }}",260,230)
+                {% endif %}
+            {% endfor %}
+    ctx.fillStyle="#3f4282"
+    ctx.fillRect(218,148,61,61)
+    ctx.fillRect(177,280,25,300)
+    ctx.stroke();
+    var router = new Image()
+    router.src="/static/img/router.png"
+    router.onload=function()
+    {
+        ctx.drawImage(router,222,150);
+
+    }
+     var x = 0
+    {% for server in servers %}
+        ctx.beginPath();
+        ctx.lineWidth=2;
+        ctx.strokeStyle="green";
+        ctx.lineCap="butt";
+        ctx.moveTo(200,330+x);ctx.lineTo(250,330+x)
+        ctx.fillText("主机名：{{ server.name }}",360,320+x)
+        ctx.fillText("IP:{{ server.networks.items.0.1.0 }}   {{ server.networks.items.0.1.1 }}",360,340+x)
+        ctx.stroke();
+        y = 300+x
+        drawserver(y)
+        x+=100
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+    })
+ssa = "{{ servers.0.name }}";
+document.getElementById("test").innerHTML= ssa;
+</script>
+{% endblock %}
+
+{% block page_content %}
+<section class="content invoice">
+<div>
+<canvas id="myCanvas" width="980" height="900" style="border:1px solid #3f4282;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+</div>
+</section>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html"%}
+
+{% block page_title %}
+<title> charging | Dashboard </title>
+{% endblock %}
+
+{% block content_title %}
+    详细账单
+    <small>云主机</small>
+{% endblock %}
+
+{% block page_content %}
+<table class="table table-hover" id="price" onload="totalPrice()">
+<tr>
+    <th>主机名</th>
+    <th>类型</th>
+    <th>创建时间</th>
+    <th>删除时间</th>
+    <th>费用</th>
+</tr>
+    {% for i in host_list %}
+        <tr>
+        <td>{{ i.name }}</td>
+        <td>{{ i.flavor }}</td>
+        <td>{{ i.create_time }}</td>
+        <td>{% if i.del_time %}
+            {{ i.del_time }}
+        {% endif %}</td>
+        <td>{{ i.price }}元</td>
+        </tr>
+    {% endfor %}
+<tr>
+    <td>合计</td>
+    <td style="text-align: center" colspan="4" id="total_price"></td>
+</tr>
+</table>
+{% endblock %}
+
+
+{% block page_script %}
+<script>
+   $(document).ready(function() {
+        var table = document.getElementById("price");
+        var price = 0;
+        for(var i = 1; i < table.rows.length-1; i++){
+            price += parseFloat(table.rows[i].cells[4].innerHTML);
+        }
+        document.getElementById("total_price").innerHTML = price.toFixed(2).toString()+"元";
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% include "pages/instance/instance.html" %}
+{% block page_title %}
+<title> overview | Dashboard </title>
+{% endblock %}
+
+{% block nav_title %}
+    概览
+{% endblock %}
+
+{% block content_title %}
+    概览
+    <small>Overview</small>
+{% endblock %}
+
+{% block page_content %}
+<br>
+<div class="box box-danger" id="loading-example">
+    <div class="box-header" style="cursor: move;">
+        <!-- tools box -->
+        <div class="pull-right box-tools">
+            <button class="btn btn-danger btn-sm refresh-btn" data-toggle="tooltip" title="" data-original-title="Reload"><i class="fa fa-refresh"></i></button>
+        </div><!-- /. tools -->
+        <i class="fa fa-cloud"></i>
+
+        <h3 class="box-title">资源配额使用情况概览</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body no-padding" style="display: block;">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="col-sm-9">
+                    <div class="pad">
+                        <div><h3>实验环境</h3></div>
+                    <!-- Progress bars -->
+                    <div class="clearfix">
+                        <span class="pull-left">主机(个)</span>
+                        <small class="pull-right">{{ p_already_use.0 }}/{{ p_quotas.0 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="p_instance" class="progress-bar progress-bar-blue" style="width: 0%;"></div>
+                    </div>
+                    <div class="clearfix">
+                        <span class="pull-left">cpu(个)</span>
+                        <small class="pull-right">{{ p_already_use.1 }}/{{ p_quotas.1 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="p_CPU" class="progress-bar progress-bar-green" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="clearfix">
+                        <span class="pull-left">内存(MB)</span>
+                        <small class="pull-right">{{ p_already_use.2 }}/{{ p_quotas.2 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="p_RAM" class="progress-bar progress-bar-red" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="clearfix">
+                        <span class="pull-left">硬盘(GB)</span>
+                        <small class="pull-right">{{ p_already_use.3 }}/{{ p_quotas.3 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="p_volume" class="progress-bar progress-bar-light-blue" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="clearfix">
+                        <span class="pull-left">IP地址</span>
+                        <small class="pull-right">{{ p_already_use.4 }}/{{ p_quotas.4 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="p_float_ip" class="progress-bar progress-bar-aqua" style="width: 0%;"></div>
+                    </div>
+                </div><!-- /.pad -->
+                </div><!-- /.col -->
+            </div>
+            <div class="col-sm-6">
+                <div class="col-sm-9">
+                <div class="pad">
+                    <div><h3>测试环境</h3></div>
+                    <!-- Progress bars -->
+                    <div class="clearfix">
+                        <span class="pull-left">主机(个)</span>
+                        <small class="pull-right">{{ t_already_use.0 }}/{{ t_quotas.0 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="t_instance" class="progress-bar progress-bar-blue" style="width: 0%;"></div>
+                    </div>
+                    <div class="clearfix">
+                        <span class="pull-left">cpu(个)</span>
+                        <small class="pull-right">{{ t_already_use.1 }}/{{ t_quotas.1 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="t_CPU" class="progress-bar progress-bar-green" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="clearfix">
+                        <span class="pull-left">内存(MB)</span>
+                        <small class="pull-right">{{ t_already_use.2 }}/{{ t_quotas.2 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="t_RAM" class="progress-bar progress-bar-red" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="clearfix">
+                        <span class="pull-left">硬盘(GB)</span>
+                        <small class="pull-right">{{ t_already_use.3 }}/{{ t_quotas.3 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="t_volume" class="progress-bar progress-bar-light-blue" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="clearfix">
+                        <span class="pull-left">IP地址</span>
+                        <small class="pull-right">{{ t_already_use.4 }}/{{ t_quotas.4 }}</small>
+                    </div>
+                    <div class="progress xs">
+                        <div id="t_float_ip" class="progress-bar progress-bar-aqua" style="width: 0%;"></div>
+                    </div>
+                </div><!-- /.pad -->
+            </div><!-- /.col -->
+            </div>
+        </div><!-- /.row - inside box -->
+    </div><!-- /.box-body -->
+</div>
+{% endblock %}
+
+
+{% block page_script %}
+<script language="javascript">
+
+    window.onload = function (){
+        {% if p_quotas %}
+            var p_instance = {{ p_already_use.0 }}/{{ p_quotas.0 }};
+            var p_CPU = {{ p_already_use.1 }}/{{ p_quotas.1 }};
+            var p_RAM = {{ p_already_use.2 }}/{{ p_quotas.2 }};
+            var p_volume = {{ p_already_use.3 }}/{{ p_quotas.3 }};
+            var p_float_ip = {{ p_already_use.4 }}/{{ p_quotas.4 }};
+            document.getElementById('p_instance').style.width=(p_instance*100)+"%";
+            document.getElementById('p_CPU').style.width=(p_CPU*100)+"%";
+            document.getElementById('p_RAM').style.width=(p_RAM*100)+"%";
+            document.getElementById('p_volume').style.width=(p_volume*100)+"%";
+            document.getElementById('p_float_ip').style.width=(p_float_ip*100)+"%";
+        {% endif %}
+        {% if t_quotas %}
+            var t_instance ={{ t_already_use.0 }}/{{ t_quotas.0 }};
+            var t_CPU ={{ t_already_use.1 }}/{{ t_quotas.1 }};
+            var t_RAM ={{ t_already_use.2 }}/{{ t_quotas.2 }};
+            var t_volume ={{ t_already_use.3 }}/{{ t_quotas.3 }};
+            var t_float_ip ={{ t_already_use.4 }}/{{ t_quotas.4 }};
+            document.getElementById('t_instance').style.width=(t_instance*100)+"%";
+            document.getElementById('t_CPU').style.width=(t_CPU*100)+"%";
+            document.getElementById('t_RAM').style.width=(t_RAM*100)+"%";
+            document.getElementById('t_volume').style.width=(t_volume*100)+"%";
+            document.getElementById('t_float_ip').style.width=(t_float_ip*100)+"%";
+        {% endif %}
+    }
+</script>
+
+{% endblock %}

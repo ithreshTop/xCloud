@@ -1,0 +1,352 @@
+﻿{% extends "base.html" %}
+
+{% block page_title %}
+<title> instance | Dashboard </title>
+{% endblock %}
+
+{% block nav_title %}
+    云主机
+{% endblock %}
+
+{% block content_title %}
+    云主机
+    <small>Instance</small>
+{% endblock %}
+
+{% block page_content %}
+    <form action="attachVolume" method="post">
+    <div class="modal fade" id="attachVolumeModal" tabindex="-1" role="dialog"
+     aria-labelledby="attachVolumeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-left:100px">
+        <div class="modal-content" style="width:100%;height:100%">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">
+                    选择云硬盘
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-12 form-horizontal standform standform-sm">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label"
+                                   style="text-align: right;padding-right: 0 ">主机名:</label>
+                            <div class="col-md-7">
+                                <input type="text" readonly="readonly" class=" form-control"
+                                       name="hostname" id="hostname"
+                                       data-bind="value:bill().hostname" >
+                            </div>
+                            <input type="hidden" name="ins_id" id="ins_id">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="volume" class="col-md-4 control-label"  style="text-align: right;padding-right: 0 ">云硬盘:</label>
+                            <div class="col-md-7">
+                                <select  style="width: 180px" class=" form-control" name="volume" id="volume" data-bind="value:bill().volume">
+                                    {% for c in cinders %}
+                                        {% for cin in c.items.0.1.volume %}
+                                            {% if not cin.status == "in-use" %}
+                                                <option value="{{ c.items.0.0 }},{{ cin.id }}">{{ cin.display_name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="float-right">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                关闭
+                            </button>
+                            <button type="submit" id="select_volume" class="btn btn-primary"
+                                    onclick="alert('绑定成功')">
+                                选择
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+<form action="renameInstance" method="post">
+    <div class="modal fade" id="renameInstanceModal" tabindex="-1" role="dialog"
+     aria-labelledby="renameInstanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-left:100px">
+        <div class="modal-content" style="width:100%;height:100%">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">
+                    编辑云主机
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-12 form-horizontal standform standform-sm">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label"
+                                   style="text-align: right;padding-right: 0 ">主机名:</label>
+                            <div class="col-md-7">
+                                <input type="text" class=" form-control"
+                                       name="hostname1" id="hostname1">
+                                <label id="message1" style="color: red"></label>
+                                <input type="hidden" class=" form-control"
+                                       name="host_id" id="host_id">
+                                <input type="hidden" class=" form-control"
+                                       name="ins_type" id="ins_type">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="float-right">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                关闭
+                            </button>
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="alert('修改成功')">
+                                确认
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+<!--进度条-->
+<div id="divPageLoading" class="loading" style="display: none">
+    <div class="spinner">
+        <div class="spinner-container container1">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+        <div class="spinner-container container2">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+        <div class="spinner-container container3">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+    </div>
+    <div class="loading-message" id="loadingMessage">处理中，请勿进<br>行其他操作</div>
+</div>
+
+<div>
+    <div>
+        <div name="volume_action">
+        	<br>
+            <button onclick="window.location.href ='createForm'"
+                    class="btn btn-primary btn-sm"  >创建云主机</button>
+	    <button class="btn btn-primary btn-sm" onclick="delIns('chk')">删除</button>
+        </div>
+    </div>
+    <br>
+    <div class="box">
+    <div class="box-header">
+        <h3 class="box-title">云主机列表</h3>
+    </div><!-- /.box-header -->
+    您可以点击主机名查看主机详细信息
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-striped" id="instance">
+            <tbody><tr>
+                <th><input type="checkbox" id="sel_all" onclick="sel('chk')"></th>
+                <th>主机名</th>
+                <th>状态</th>
+                <th>配置</th>
+                <th>镜像</th>
+                <th>IP</th>
+                <th>创建时间</th>
+                <th>环境</th>
+                <th>操作</th>
+            </tr>
+            {% if novas.0.items.0.1.server %}
+            {% for n in novas %}
+                {% for ins in n.items.0.1.server %}
+            <tr>
+                <td><input type="checkbox" name="chk" /></td>
+                <td><a href="instanceDetail/p1{{ ins.id }}p2{{ n.keys.0 }}/">{{ ins.name }}</a></td>
+                <td id="{{ins.name}}"><label class="label label-info">{{ ins.status }}</label>
+                <br><br></td>
+                <td>{% for fla in n.items.0.1.flavor %}
+                    {% if fla.id == ins.flavor.id %}
+                    虚拟内核 {{ fla.vcpus }}<br>
+                        内存{{ fla.ram }}MB<br>
+                        根磁盘{{ fla.disk }}GB
+                    {% endif %}
+                    {% endfor %}</td>
+                <td>{% for img in n.items.0.1.image %}
+                    {% if img.id == ins.image.id %}
+                        {{ img.name }}<br>
+                        初始用户名:{{ img.metadata.username }}<br>
+                        初始密码:{{ img.metadata.password }}
+                    {% endif %}
+                    {% endfor %}</td>
+                <td id="{{ins.id}}">{{ ins.networks.items.0.1.1 }}</td>
+                <td>{{ ins.created }}</td>
+                <td>{{ n.keys.0 }}</td>
+                <td class="btn-group" onclick="getHost(this.parentNode.rowIndex)">
+                    <button type="button" class="btn btn-default" onclick="window.location.href='rebootInstance/p1{{ ins.id }}p2experiment/'">重启</button>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="stopInstance/p1{{ ins.id }}p2{{ n.keys.0 }}/" onclick="$('#divPageLoading').show();">关机</a></li>
+                        <li><a href="startInstance/p1{{ ins.id }}p2{{ n.keys.0 }}/" onclick="$('#divPageLoading').show();">开机</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#attachVolumeModal" >绑定云硬盘</a></li>
+                        <li><a href="startConsole/p1{{ ins.id }}p2{{ n.keys.0 }}/">控制台</a></li>
+                        <li><a href="deleteInstance/p1{{ ins.id }}p2{{ n.keys.0 }}/"
+                               onclick="$('#loadingMessage').html('删除主机时间很<br>长，请您耐心等待<br>不要进行其他操作');
+                               $('#divPageLoading').show();">删除</a></li>
+						<li><a href="#" data-toggle="modal" data-target="#renameInstanceModal">编辑云主机</a></li>
+                        <li class="divider"></li>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+            {% else %}
+            <tr>
+                <th style="text-align:center" colspan="9">当前无已创建云主机</th>
+            </tr>
+            {% endif %}
+
+        </tbody></table>
+    </div><!-- /.box-body -->
+    </div>
+</div>
+{% endblock %}
+
+{% block page_script %}
+<script>
+
+function sel(a) {
+    var o = document.getElementsByName(a);
+    var s = document.getElementById("sel_all");
+    if(s.checked == true){
+        for(var i = 0; i < o.length; i++) {
+            o[i].checked = true;
+        }
+    }else{
+        for(var j = 0; j < o.length; j++) {
+            o[j].checked = false;
+        }
+    }
+}
+function delIns(a){
+    document.getElementById("loadingMessage").innerHTML = "删除主机时间很<br>长，请您耐心等待";
+    $('#divPageLoading').show();
+    var listhost = [];
+    var o = document.getElementsByName(a);
+    var table = document.getElementById("instance");
+    var host_production = {};
+    var host_test = {};
+    host_production["experiment"] = [];
+    host_test["test"] = [];
+    for(var i = 0; i < o.length; i++) {
+        if(o[i].checked == true){
+            var host_id = table.rows[i+1].cells[5].id;
+            if(table.rows[i+1].cells[7].innerHTML == "experiment"){
+                host_production["experiment"].push(host_id);
+            }else{
+                host_production["test"].push(host_id);
+            }
+        }
+    }
+    listhost.push(host_production);
+    //listhost.push(host_test);
+
+    var listHostJsonString = JSON.stringify(listhost);
+    $.post('/feature/instance/deleteInstance/p1(.*)p2(.*)/', {listHostJson: listHostJsonString}, function(data){
+        if(data == 1){
+            window.location.href = "/feature/instance";
+        }
+    })
+}
+
+function getHost(index) {
+    var hostname = document.getElementById("instance").rows[index].cells[2].id;
+    var ins_type = document.getElementById("instance").rows[index].cells[7].innerHTML;
+    var host_id = document.getElementById("instance").rows[index].cells[5].id;
+    document.getElementById("hostname").value = hostname;
+    document.getElementById("hostname1").value = hostname;
+    document.getElementById("host_id").value = host_id;
+    document.getElementById("ins_type").value = ins_type;
+    document.getElementById("ins_id").value = host_id;
+    var volume = document.getElementById("volume");
+    for(var i = 0; i < volume.length; i++){
+        if(volume[i].value.split(",")[0] != ins_type){
+            volume.options.remove(i);
+        }
+    }
+    if(volume.length == 0){
+        volume.options.add(new Option("无可用云硬盘"));
+        document.getElementById("select_volume").disabled=true;
+    }
+}
+
+$(document).ready(function() {
+    {% if novas.0.items.0.1.server %}
+        {% for n in novas %}
+            {% for ins in n.items.0.1.server %}
+                var sta = $( "#{{ ins.name }}").text();
+                if (sta != "ACTIVE" && sta != "SHUTDOWN") {
+                    var a{{ ins.name }} = setInterval(function () {
+                        $.getJSON("/feature/instance/ajax_process/p1{{ ins.id }}p2{{ n.keys.0 }}", function (data) {
+                            if (data.ins_status != "REBOOT" && data.ins_status != "BUILD") {
+                                var status = $("#{{ ins.name }}")[0];
+                                var network = $("#{{ ins.id }}")[0];
+                                var s = '<label class="label label-info">' + data.ins_status + '</label>';
+                                status.innerHTML = s;
+                                network.innerHTML = data.ins_network;
+                                clearInterval(a{{ ins.name }});
+                            }
+                        })
+                    }, 4000);
+                }
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+    $("#hostname1").bind('keyup', function () {
+        var hostname = $("#hostname1").val();
+        $.ajax({
+            type: "POST",
+            url: "/feature/instance/",
+            data: {servername: hostname},
+            dataType: "json",
+            success: function (data) {
+                $("#message1").text('');
+                $("#submit").attr("disabled",false);
+                if (data == 1) {
+                    $("#message1").text("主机名已经存在");
+                    $("#submit").attr("disabled",true);
+                }
+            }
+        })
+    })
+});
+
+window.onload = function (){
+    var table = document.getElementById("instance");
+    for(var index = 1; index < table.rows.length; index++){
+        var time = table.rows[index].cells[6].innerHTML;
+        time = time.replace('Z', '');
+        var date = time.split("T")[0];
+        var time0 = time.split("T")[1];
+        var date0 = new Date(date.split("-")[0], date.split("-")[1]-1, date.split("-")[2],
+                time0.split(":")[0], time0.split(":")[1], time0.split(":")[2]);
+        var createDate = date0.getTime() - date0.getTimezoneOffset() * 60000;
+        var d = new Date(createDate);
+        table.rows[index].cells[6].innerHTML = d.toLocaleString().toString();
+    }
+}
+</script>
+{% endblock %}
