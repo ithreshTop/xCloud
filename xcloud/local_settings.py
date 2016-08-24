@@ -9,7 +9,7 @@ DATABASES = {
         'NAME': 'xcloud',
         'USER': 'root',
         'PASSWORD': 'xcloud',
-        'HOST': '10.1.201.47',
+        'HOST': '10.1.1.1',
         'PORT': '3306',
         'TEST_CHARSET': 'utf8',
         'OPTIONS': {
@@ -19,7 +19,7 @@ DATABASES = {
 }
 
 # celery broker_url配置
-BROKER_URL = "amqp://guest:guest@10.1.201.47:5672/"
+BROKER_URL = "amqp://guest:guest@10.1.1.1:5672/"
 CELERYBEAT_SCHEDULE = {'do-task-everyday': {
     'task': 'feature.celerytask.tasks.is_deadline',
     'schedule': crontab(hour=0, minute=0)}, 
@@ -28,7 +28,7 @@ CELERYBEAT_SCHEDULE = {'do-task-everyday': {
     'schedule': crontab(hour=0, minute=0)},}
 
 # ldap 配置
-AUTH_LDAP_SERVER_URI = 'ldap://10.37.144.166:389'
+AUTH_LDAP_SERVER_URI = 'ldap://10.37.1.1:389'
 AUTH_LDAP_BIND_DN = "cn=root"
 AUTH_LDAP_BIND_PASSWORD = "Passw0rd"
 
@@ -39,21 +39,21 @@ DATA_CENTER_PRO = {
     "username": "admin",
     "password": "admin",
     "tenant_name": "admin",
-    "auth_url": "http://10.1.201.24:5000/v2.0",
+    "auth_url": "http://10.1.1.1:5000/v2.0",
 }
 # 测试环境
 DATA_CENTER_TEST = {
     "username": "admin",
     "password": "admin",
     "tenant_name": "admin",
-    "auth_url": "http://10.1.201.24:5000/v2.0",
+    "auth_url": "http://10.1.1.1:5000/v2.0",
 }
 
 # 发送邮件
-EMAIL_HOST = 'smtp.enn.cn'
+EMAIL_HOST = '**'
 EMAIL_PORT = 25
-EMAIL_HOST_USER = 'eCloud@enn.cn'
-# EMAIL_HOST_PASSWORD = 'msx919872758'
+EMAIL_HOST_USER = '**'
+
 EMAIL_HOST_USER_TLS = True
 
 #导入模块
